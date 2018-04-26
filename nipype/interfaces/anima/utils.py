@@ -17,7 +17,7 @@ from nipype.interfaces.base import (
 
 class ImageArithmeticInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
-                          desc='input image')
+                      desc='input image')
     out_file = File(argstr='-o %s', desc='output image',
                     mandatory=True)
     add_file = File(exists=True, argstr='-a %s',
@@ -52,3 +52,22 @@ class ImageArithmetic(CommandLine):
     _cmd = 'animaImageArithmetic'
     input_spec = ImageArithmeticInputSpec
     output_spec = ImageArithmeticOutputSpec
+
+
+class AverageImagesInputSpec(CommandLineInputSpec):
+    input_files = File(exists=True, argstr='-i %s', mandatory=True,
+                      desc='input file list as text file')
+    mask_files = File(exists=True, argstr='-m %s',
+                      desc='masks file list as text file')
+    out_file = File(argstr='-o %s', desc='output image',
+                    mandatory=True)
+
+
+class AverageImagesOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='output image')
+
+
+class AverageImages(CommandLine):
+    _cmd = 'animaAverageImages'
+    input_spec = AverageImagesInputSpec
+    output_spec = AverageImagesOutputSpec

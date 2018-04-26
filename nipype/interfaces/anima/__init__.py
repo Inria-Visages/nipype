@@ -8,3 +8,6 @@ from .registration import (PyramidalBMRegistration)
 
 # Filtering stuff
 from .filtering import (NLMeans)
+
+# Utility stuff
+from .utils import (ImageArithmetic, AverageImages)
