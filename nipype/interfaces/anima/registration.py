@@ -13,7 +13,7 @@ from nipype.interfaces.base import (
     File,
     traits
 )
-
+import os
 
 class PyramidalBMRegistrationInputSpec(CommandLineInputSpec):
     reference_file = File(exists=True, argstr='-r %s', mandatory=True,
@@ -48,3 +48,9 @@ class PyramidalBMRegistration(CommandLine):
     _cmd = 'animaPyramidalBMRegistration'
     input_spec = PyramidalBMRegistrationInputSpec
     output_spec = PyramidalBMRegistrationOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs['out_transform_file'] = os.path.abspath(self.inputs.out_transform_file)
+        return outputs
