@@ -120,3 +120,22 @@ class AverageImages(CommandLine):
     _cmd = 'animaAverageImages'
     input_spec = AverageImagesInputSpec
     output_spec = AverageImagesOutputSpec
+
+
+class MaskImageInputSpec(CommandLineInputSpec):
+    input_file = File(exists=True, argstr='-i %s', mandatory=True,
+                      desc='input file')
+    mask_file = File(exists=True, argstr='-m %s', mandatory=True,
+                     desc='mask file')
+    out_file = File(argstr='-o %s', desc='output image',
+                    mandatory=True)
+
+
+class MaskImageOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='output image')
+
+
+class MaskImage(CommandLine):
+    _cmd = 'animaMaskImage'
+    input_spec = MaskImageInputSpec
+    output_spec = MaskImageOutputSpec
