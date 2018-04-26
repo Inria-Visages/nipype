@@ -33,8 +33,10 @@ class PyramidalBMRegistrationInputSpec(CommandLineInputSpec):
                                     1: correlation coefficient, 2: mean squares')
     pyramid_levels = traits.Int(3, argstr="-p %d", usedefault=True,
                                 desc='number of pyramid levels')
-    last_pyramid_level = traits.Int(0, argstr='-l %d',
+    last_pyramid_level = traits.Int(0, argstr='-l %d', usedefault=True,
                                     desc='index of the last pyramid level explored')
+    number_of_threads = traits.Int(0, argstr='-T %d', usedefault=True,
+                                   desc='number of threads to run on')
 
 
 class PyramidalBMRegistrationOutputSpec(TraitedSpec):
@@ -46,4 +48,3 @@ class PyramidalBMRegistration(CommandLine):
     _cmd = 'animaPyramidalBMRegistration'
     input_spec = PyramidalBMRegistrationInputSpec
     output_spec = PyramidalBMRegistrationOutputSpec
-
