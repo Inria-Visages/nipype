@@ -8,8 +8,11 @@ from __future__ import (print_function, division, unicode_literals,
 
 from nipype.interfaces.base import (
     TraitedSpec,
+    BaseInterfaceInputSpec,
+    BaseInterface,
     CommandLineInputSpec,
     CommandLine,
+    InputMultiPath,
     File,
     traits
 )
@@ -18,8 +21,7 @@ import os
 
 
 class CropImageInputSpec(CommandLineInputSpec):
-    @staticmethod
-    def get_desc_size(self, dimension):
+    def get_desc_size(dimension):
         return (
             'Size of ROI for the {}index dimension. '
             'The resulting croped image will go from {}index to {}size along the {}index axis. '
@@ -27,8 +29,7 @@ class CropImageInputSpec(CommandLineInputSpec):
             dimension, dimension, dimension, dimension
         )
 
-    @staticmethod
-    def get_desc_index(self, dimension):
+    def get_desc_index(dimension):
         return (
             'Start of ROI for the {}index dimension. '
             'The resulting croped image will go from {}index to {}size along the {}index axis.').format(
@@ -39,6 +40,7 @@ class CropImageInputSpec(CommandLineInputSpec):
                    desc='Input image to crop')
     out_file = File(argstr='-o %s', mandatory=True,
                     desc='Output cropped image')
+
     tsize = traits.Int(argstr='-T %d', desc=get_desc_size('t'))
     tindex = traits.Int(argstr='-t %d', desc=get_desc_index('t'))
     zsize = traits.Int(argstr='-Z %d', desc=get_desc_size('z'))
@@ -116,9 +118,9 @@ class ImageArithmetic(CommandLine):
 
 
 class AverageImagesInputSpec(CommandLineInputSpec):
-    input_files = File(exists=True, argstr='-i %s', mandatory=True,
+    input_file = File(exists=True, argstr='-i %s', mandatory=True,
                        desc='input file list as text file')
-    mask_files = File(exists=True, argstr='-m %s',
+    mask_file = File(exists=True, argstr='-m %s',
                       desc='masks file list as text file')
     out_file = File(argstr='-o %s', desc='output image',
                     mandatory=True)
@@ -159,5 +161,35 @@ class MaskImage(CommandLine):
 
     def _list_outputs(self):
         outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
+
+
+class CreateFilesListInputSpec(BaseInterfaceInputSpec):
+    input_files = InputMultiPath(File(exists=True), mandatory=True,
+                                 desc='Files to be included in file list')
+    out_file = File(desc='Text file containing the file list', mandatory=True)
+
+
+class CreateFilesListOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='Text file containing the file list')
+
+
+class CreateFilesList(BaseInterface):
+    input_spec = CreateFilesListInputSpec
+    output_spec = CreateFilesListOutputSpec
+
+    def _run_interface(self, runtime):
+        files_list = self.inputs.input_files
+        text_file = open(self.inputs.out_file, "w")
+
+        for fname in files_list:
+            text_file.write("%s\n" % fname)
+
+        text_file.close()
+        return runtime
+
+    def _list_outputs(self):
+        outputs = self._outputs().get()
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
