@@ -13,21 +13,25 @@ from nipype.interfaces.base import (
     File,
     traits
 )
+
 import os
 
+
 class CropImageInputSpec(CommandLineInputSpec):
-    def get_desc_size(dimension):
+    @staticmethod
+    def get_desc_size(self, dimension):
         return (
-        'Size of ROI for the {}index dimension. '
-        'The resulting croped image will go from {}index to {}size along the {}index axis. '
-        'If 0 the dimension is collapsed.').format(
+            'Size of ROI for the {}index dimension. '
+            'The resulting croped image will go from {}index to {}size along the {}index axis. '
+            'If 0 the dimension is collapsed.').format(
             dimension, dimension, dimension, dimension
         )
 
-    def get_desc_index(dimension):
+    @staticmethod
+    def get_desc_index(self, dimension):
         return (
-        'Start of ROI for the {}index dimension. '
-        'The resulting croped image will go from {}index to {}size along the {}index axis.').format(
+            'Start of ROI for the {}index dimension. '
+            'The resulting croped image will go from {}index to {}size along the {}index axis.').format(
             dimension, dimension, dimension, dimension
         )
 
@@ -50,8 +54,10 @@ class CropImageInputSpec(CommandLineInputSpec):
         xor=['tsize', 'tindex', 'zsize', 'zindex', 'ysize', 'yindex', 'xsize', 'xindex']
     )
 
+
 class CropImageOutputSpec(TraitedSpec):
-     out_file = File(desc = "Cropped Image", exists = True)
+    out_file = File(desc='Cropped Image', exists = True)
+
 
 class CropImage(CommandLine):
     _cmd = 'animaCropImage'
@@ -63,6 +69,7 @@ class CropImage(CommandLine):
         outputs = self.output_spec().get()
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
+
 
 class ImageArithmeticInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
@@ -102,10 +109,14 @@ class ImageArithmetic(CommandLine):
     input_spec = ImageArithmeticInputSpec
     output_spec = ImageArithmeticOutputSpec
 
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
 
 class AverageImagesInputSpec(CommandLineInputSpec):
     input_files = File(exists=True, argstr='-i %s', mandatory=True,
-                      desc='input file list as text file')
+                       desc='input file list as text file')
     mask_files = File(exists=True, argstr='-m %s',
                       desc='masks file list as text file')
     out_file = File(argstr='-o %s', desc='output image',
@@ -120,6 +131,11 @@ class AverageImages(CommandLine):
     _cmd = 'animaAverageImages'
     input_spec = AverageImagesInputSpec
     output_spec = AverageImagesOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
 
 
 class MaskImageInputSpec(CommandLineInputSpec):
@@ -139,3 +155,8 @@ class MaskImage(CommandLine):
     _cmd = 'animaMaskImage'
     input_spec = MaskImageInputSpec
     output_spec = MaskImageOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs

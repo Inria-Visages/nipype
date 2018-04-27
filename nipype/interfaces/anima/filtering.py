@@ -14,6 +14,8 @@ from nipype.interfaces.base import (
     traits
 )
 
+import os
+
 
 class NLMeansInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
@@ -50,3 +52,31 @@ class NLMeans(CommandLine):
     _cmd = 'animaNLMeans'
     input_spec = NLMeansInputSpec
     output_spec = NLMeansOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
+
+class GaussianSmoothingInputSpec(CommandLineInputSpec):
+    input_file = File(exists=True, argstr='-i %s', mandatory=True,
+                      desc='input image')
+    out_file = File(argstr='-o %s', desc='output smoothed image',
+                    mandatory=True)
+    gaussian_sigma = traits.Float(2.0, argstr='-s %f', usedefault=True,
+                                  desc='Gaussian smoothing sigma value')
+
+
+class GaussianSmoothingOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='output smoothed image')
+
+
+class GaussianSmoothing(CommandLine):
+    _cmd = 'animaImageSmoother'
+    input_spec = GaussianSmoothingInputSpec
+    output_spec = GaussianSmoothingOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs

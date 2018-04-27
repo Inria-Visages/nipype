@@ -9,14 +9,22 @@ This module defines the API of Anima interfaces.
 """
 
 # Registration stuff
-from .registration import (PyramidalBMRegistration)
+from .registration import (
+    PyramidalBMRegistration,
+    DenseSVFBMRegistration,
+    ApplyTransformSerie
+)
 
 # Filtering stuff
-from .filtering import (NLMeans)
+from .filtering import (
+    NLMeans,
+    GaussianSmoothing
+)
 
 # Utility stuff
 from .utils import (
     CropImage,
     ImageArithmetic,
-    AverageImages
+    AverageImages,
+    MaskImage
 )
