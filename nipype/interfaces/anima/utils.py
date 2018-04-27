@@ -114,6 +114,7 @@ class ImageArithmetic(CommandLine):
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
 
+
 class AverageImagesInputSpec(CommandLineInputSpec):
     input_files = File(exists=True, argstr='-i %s', mandatory=True,
                        desc='input file list as text file')
