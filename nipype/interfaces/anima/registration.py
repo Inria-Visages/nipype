@@ -10,6 +10,7 @@ from nipype.interfaces.base import (
     TraitedSpec,
     CommandLineInputSpec,
     CommandLine,
+    InputMultiPath,
     File,
     traits
 )
@@ -107,6 +108,31 @@ class DenseSVFBMRegistration(CommandLine):
         if self.inputs.out_transform_file:
             outputs['out_transform_file'] = os.path.abspath(self.inputs.out_transform_file)
 
+        return outputs
+
+
+class TransformSerieXmlGeneratorInputSpec(CommandLineInputSpec):
+    input_files = InputMultiPath(File(exists=True), argstr='-i %s', sep=' -i ', mandatory=True,
+                                 desc='input transformations')
+    input_inversion_flags = traits.ListInt(argstr='-I %s', sep=' -I ',
+                                           desc='transformations inversion flags')
+    dense_trsf_flag = traits.Bool(argstr='-D', desc='non linear transfroms are dense fields')
+    out_file = File(argstr='-o %s', desc='output XML file',
+                    mandatory=True)
+
+
+class TransformSerieXmlGeneratorOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='output XML file')
+
+
+class TransformSerieXmlGenerator(CommandLine):
+    _cmd = 'animaTransformSerieXmlGenerator'
+    input_spec = TransformSerieXmlGeneratorInputSpec
+    output_spec = TransformSerieXmlGeneratorOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
 
 

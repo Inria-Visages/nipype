@@ -12,7 +12,8 @@ This module defines the API of Anima interfaces.
 from .registration import (
     ApplyTransformSerie,
     DenseSVFBMRegistration,
-    PyramidalBMRegistration
+    PyramidalBMRegistration,
+    TransformSerieXmlGenerator
 )
 
 # Filtering stuff
