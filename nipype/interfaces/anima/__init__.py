@@ -16,6 +16,11 @@ from .registration import (
     TransformSerieXmlGenerator
 )
 
+# Diffusion stuff
+from .diffusion import (
+    EddyCurrentCorrection
+)
+
 # Filtering stuff
 from .filtering import (
     GaussianSmoothing,
