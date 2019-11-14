@@ -73,6 +73,31 @@ class CropImage(CommandLine):
         return outputs
 
 
+class ConvertImageInputSpec(CommandLineInputSpec):
+    input_file = File(exists=True, argstr='-i %s', mandatory=True, desc='input image.')
+    out_file = File(argstr='-o %s', desc='output image', mandatory=False)
+    space_reference_image = File(argstr='-s %s', mandatory=False, desc='Image used as space reference.')
+    gradients = File(argstr='-g %s', mandatory=False, desc='input gradients.')
+    reorient = traits.Str('', argstr='-R %s', usedefault=False, desc='Reorient the image in \'AXIAL\' or \'CORONAL\' or \'SAGITTAL\' direction.')
+    information = traits.Bool(True, argstr='-I', usedefault=True, desc='Get image informations')
+
+
+class ConvertImageOutputSpec(TraitedSpec):
+    out_file = File(desc='Converted Image', exists = True)
+
+
+class ConvertImage(CommandLine):
+    _cmd = 'animaConvertImage'
+
+    input_spec = ConvertImageInputSpec
+    output_spec = ConvertImageOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
+
+
 class ImageArithmeticInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
                       desc='input image')

@@ -87,7 +87,7 @@ class NLMeansTemporal(CommandLine):
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
 
-    
+
 class GaussianSmoothingInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
                       desc='input image')
