@@ -110,3 +110,29 @@ class GaussianSmoothing(CommandLine):
         outputs = self.output_spec().get()
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
+
+
+class DistortionCorrectionInputSpec(CommandLineInputSpec):
+    backward_file = File(exists=True, argstr='-b %s', mandatory=True, desc='Backward image')
+    forward_file = File(exists=True, argstr='-f %s', mandatory=True, desc='Forward image')
+    out_file = File(argstr='-o %s', mandatory=True, desc='Output vector field')
+
+    number_of_threads = traits.Int(0, argstr='-T %d', usedefault=True, desc='number of threads to run on')
+    gaussian_smoothing_sigma = traits.Float(2, argstr='-s %f', usedefault=True, desc='gaussian smoothing sigma')
+    number_distortion_correction = traits.Int(1, argstr='-d %d', usedefault=True, desc='number of the direction of distortion')
+
+
+class DistortionCorrectionOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='Output vector field')
+
+
+class DistortionCorrection(CommandLine):
+    _cmd = 'animaDistortionCorrection'
+    input_spec = DistortionCorrectionInputSpec
+    output_spec = DistortionCorrectionOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
+
