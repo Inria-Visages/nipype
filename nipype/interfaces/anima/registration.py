@@ -90,6 +90,10 @@ class DenseSVFBMRegistrationInputSpec(CommandLineInputSpec):
 
     input_transform_series = traits.List('', usedefault=True,
                                          desc='Input transformations list (previous transformations applied)')
+    transform_init_type = traits.Enum(1, 0, 2, argstr='-I %d',
+                                      usedefault=True,
+                                      desc='If no input transformation is given, initialization type, 0: identity, \
+                                            1: align gravity centers, 2: gravity PCA closest transform')
 
     metric_type = traits.Enum(0, 1, 2, argstr='--metric %d',
                               usedefault=True,
