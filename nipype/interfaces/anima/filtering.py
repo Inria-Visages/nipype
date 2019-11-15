@@ -160,3 +160,30 @@ class BMDistortionCorrection(CommandLine):
         outputs = self.output_spec().get()
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
+
+
+class ApplyDistortionCorrectionInputSpec(CommandLineInputSpec):
+    backward_file = File(exists=True, argstr='-b %s', mandatory=False, desc='Backward image')
+    forward_file = File(exists=True, argstr='-f %s', mandatory=True, desc='Forward image')
+    out_file = File(argstr='-o %s', mandatory=True, desc='Output vector field')
+    number_of_threads = traits.Int(0, argstr='-T %d', usedefault=True, desc='number of threads to run on')
+    transformation_real_coordinates_out_file = File(argstr='-O %s', mandatory=False, desc='Transformation in real coordinates')
+    distortion_correction_field = traits.Str('', argstr='-t %s', usedefault=False, desc='distortion correction field')
+    invert = traits.Bool(True, argstr='-I', usedefault=True, desc='If set, invert the input field (after reverting if R option is on')
+    reverse = traits.Bool(True, argstr='-R', usedefault=True, desc='If set, apply the opposite of the input field to the forward image')
+    voxel = traits.Bool(True, argstr='-V', usedefault=True, desc='If set, the input correction field is assumed to be in voxel coordinates')
+
+
+class ApplyDistortionCorrectionOutputSpec(TraitedSpec):
+    out_file = File(exists=True, desc='Output vector field')
+
+
+class ApplyDistortionCorrection(CommandLine):
+    _cmd = 'animaApplyDistortionCorrection'
+    input_spec = BMDistortionCorrectionInputSpec
+    output_spec = BMDistortionCorrectionOutputSpec
+
+    def _list_outputs(self):
+        outputs = self.output_spec().get()
+        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        return outputs
