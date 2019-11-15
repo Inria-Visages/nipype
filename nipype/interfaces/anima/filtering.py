@@ -187,33 +187,3 @@ class ApplyDistortionCorrection(CommandLine):
         outputs = self.output_spec().get()
         outputs['out_file'] = os.path.abspath(self.inputs.out_file)
         return outputs
-
-
-class DTIEstimatorInputSpec(CommandLineInputSpec):
-    dwi_volume_file = File(exists=True, argstr='-i %s', mandatory=True, desc='DWI volume')
-    b_values_file = File(exists=True, argstr='-b %s', mandatory=True, desc='b values')
-    gradients_file = File(exists=True, argstr='-g %s', mandatory=True, desc='Input gradients')
-    corruption_mask_file = File(exists=True, argstr='-m %s', mandatory=False, desc='computation mask')
-    reorient_DWI_file = File(exists=True, argstr='-r %s', mandatory=False, desc='Reorient DWI given as input')
-    out_file = File(argstr='-o %s', mandatory=True, desc='Result DTI image')
-    b0_image_file = File(argstr='-O %s', mandatory=False, desc='Result DTI image')
-    reorient_gradients_file = File(argstr='-R %s', mandatory=False, desc='Reorient gradients so that they are in MrTrix format (in image coordinates)')
-    noise_variance_image_file = File(argstr='-N %s', mandatory=False, desc='Result noise variance image')
-    number_of_threads = traits.Int(0, argstr='-p %d', usedefault=True, desc='number of threads to run on')
-    b_no_scale = traits.Bool(True, argstr='-B', usedefault=True, desc='Do not scale b-values according to gradient norm')
-    b0_threshold = traits.Float(0, argstr='-t %f', usedefault=True, desc='B0 threshold')
-
-
-class DTIEstimatorOutputSpec(TraitedSpec):
-    out_file = File(exists=True, desc='Output vector field')
-
-
-class DTIEstimator(CommandLine):
-    _cmd = 'animaDTIEstimator'
-    input_spec = DTIEstimatorInputSpec
-    output_spec = DTIEstimatorOutputSpec
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
-        return outputs
