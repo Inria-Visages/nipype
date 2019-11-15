@@ -147,7 +147,7 @@ class MaskImageInputSpec(CommandLineInputSpec):
     mask_file = File(exists=True, argstr='-m %s', mandatory=True,
                      desc='mask file')
     out_file = File(argstr='-o %s', desc='output image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_masked.nrrd', keep_extension=False)
 
 
 class MaskImageOutputSpec(TraitedSpec):
@@ -160,8 +160,7 @@ class MaskImage(CommandLine):
     output_spec = MaskImageOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(MaskImage, self)._list_outputs()
         return outputs
 
 

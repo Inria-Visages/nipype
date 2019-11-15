@@ -24,11 +24,12 @@ class PyramidalBMRegistrationInputSpec(CommandLineInputSpec):
     moving_file = File(exists=True, argstr='-m %s', mandatory=True,
                        desc='moving image')
     out_file = File(argstr='-o %s', desc='output (registered) image',
-                    mandatory=True)
+                    name_source=['moving_file'], name_template='%s_bmreg_lin.nrrd', keep_extension=False)
     input_transform_file = File(argstr='-i %s',
                                 desc='input transformation matrix (ITK txt format)')
     out_transform_file = File(argstr='-O %s',
-                              desc='output transformation matrix (ITK txt format)')
+                              desc='output transformation matrix (ITK txt format)',
+                              name_source=['moving_file'], name_template='%s_bmreg_lin_tr.txt', keep_extension=False)
     out_transform_type = traits.Enum(0, 1, 2, argstr='--ot %d',
                                      usedefault=True,
                                      desc='output transformation type (0: rigid, 1: translation, 2: affine)')
@@ -61,19 +62,18 @@ class PyramidalBMRegistrationOutputSpec(TraitedSpec):
     out_transform_series = traits.List('', usedefault=True,
                                        desc='Output transformations list (input followed by current')
 
+
 class PyramidalBMRegistration(CommandLine):
     _cmd = 'animaPyramidalBMRegistration'
     input_spec = PyramidalBMRegistrationInputSpec
     output_spec = PyramidalBMRegistrationOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(PyramidalBMRegistration, self)._list_outputs()
 
         outputs['out_transform_series'] = self.inputs.input_transform_series
-        if self.inputs.out_transform_file:
-            outputs['out_transform_file'] = os.path.abspath(self.inputs.out_transform_file)
-            outputs['out_transform_series'].append(os.path.abspath(self.inputs.out_transform_file))
+        if outputs['out_transform_file']:
+            outputs['out_transform_series'].append(os.path.abspath(outputs['out_transform_file']))
 
         return outputs
 
@@ -84,16 +84,13 @@ class DenseSVFBMRegistrationInputSpec(CommandLineInputSpec):
     moving_file = File(exists=True, argstr='-m %s', mandatory=True,
                        desc='moving image')
     out_file = File(argstr='-o %s', desc='output (registered) image',
-                    mandatory=True)
+                    name_source=['moving_file'], name_template='%s_bmreg_dense.nrrd', keep_extension=False)
     out_transform_file = File(argstr='-O %s',
-                              desc='output SVF transform')
+                              desc='output SVF transform',
+                              name_source=['moving_file'], name_template='%s_bmreg_dense_tr.nrrd', keep_extension=False)
 
     input_transform_series = traits.List('', usedefault=True,
                                          desc='Input transformations list (previous transformations applied)')
-    transform_init_type = traits.Enum(1, 0, 2, argstr='-I %d',
-                                      usedefault=True,
-                                      desc='If no input transformation is given, initialization type, 0: identity, \
-                                            1: align gravity centers, 2: gravity PCA closest transform')
 
     metric_type = traits.Enum(0, 1, 2, argstr='--metric %d',
                               usedefault=True,
@@ -127,13 +124,11 @@ class DenseSVFBMRegistration(CommandLine):
     output_spec = DenseSVFBMRegistrationOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(DenseSVFBMRegistration, self)._list_outputs()
 
         outputs['out_transform_series'] = self.inputs.input_transform_series
-        if self.inputs.out_transform_file:
-            outputs['out_transform_file'] = os.path.abspath(self.inputs.out_transform_file)
-            outputs['out_transform_series'].append(os.path.abspath(self.inputs.out_transform_file))
+        if outputs['out_transform_file']:
+            outputs['out_transform_series'].append(os.path.abspath(outputs['out_transform_file']))
 
         return outputs
 
@@ -145,7 +140,7 @@ class TransformSerieXmlGeneratorInputSpec(CommandLineInputSpec):
                                            desc='transformations inversion flags')
     dense_trsf_flag = traits.Bool(argstr='-D', desc='non linear transforms are dense fields')
     out_file = File(argstr='-o %s', desc='output XML file',
-                    mandatory=True)
+                    name_source=['input_files'], name_template='%s.xml', keep_extension=False)
 
 
 class TransformSerieXmlGeneratorOutputSpec(TraitedSpec):
@@ -158,8 +153,7 @@ class TransformSerieXmlGenerator(CommandLine):
     output_spec = TransformSerieXmlGeneratorOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(TransformSerieXmlGenerator, self)._list_outputs()
         return outputs
 
 
@@ -169,7 +163,7 @@ class ApplyTransformSerieInputSpec(CommandLineInputSpec):
     transform_file = File(exists=True, argstr='-t %s', mandatory=True,
                           desc='transform series file (XML)')
     out_file = File(argstr='-o %s', desc='output (resampled) image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_warped.nrrd', keep_extension=False)
     geometry_file = File(exists=True, argstr='-g %s', mandatory=True,
                          desc='geometry image')
     interpolation_mode = traits.Enum('linear', 'nearest', 'bspline', 'sinc',
@@ -190,6 +184,5 @@ class ApplyTransformSerie(CommandLine):
     output_spec = ApplyTransformSerieOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(ApplyTransformSerie, self)._list_outputs()
         return outputs
