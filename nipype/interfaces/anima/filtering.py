@@ -21,7 +21,7 @@ class NLMeansInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
                           desc='input noisy image')
     out_file = File(argstr='-o %s', desc='output denoised image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_denoised.nrrd', keep_extension=False)
     weighting_method = traits.Enum(0, 1, argstr='-W %d',
                                    usedefault=True,
                                    desc='weighting method (0: exponential, 1: rician)')
@@ -54,8 +54,7 @@ class NLMeans(CommandLine):
     output_spec = NLMeansOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(NLMeans, self)._list_outputs()
         return outputs
 
 
@@ -63,7 +62,7 @@ class GaussianSmoothingInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
                       desc='input image')
     out_file = File(argstr='-o %s', desc='output smoothed image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_smoothed.nrrd', keep_extension=False)
     gaussian_sigma = traits.Float(2.0, argstr='-s %f', usedefault=True,
                                   desc='Gaussian smoothing sigma value')
 
@@ -78,6 +77,5 @@ class GaussianSmoothing(CommandLine):
     output_spec = GaussianSmoothingOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(GaussianSmoothing, self)._list_outputs()
         return outputs

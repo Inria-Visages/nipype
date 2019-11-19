@@ -20,8 +20,10 @@ import os
 class EddyCurrentCorrectionInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True, desc='input DW image')
     input_gradient_file = File(argstr='-I %s', desc='input gradients', mandatory=True)
-    out_file = File(argstr='-o %s', desc='output (registered) image', mandatory=True)
-    out_gradients_file = File(argstr='-O %s', desc='output gradients', mandatory=True)
+    out_file = File(argstr='-o %s', desc='output (registered) image',
+                    name_source=['input_file'], name_template='%s_ec_corrected.nrrd', keep_extension=False)
+    out_gradients_file = File(argstr='-O %s', desc='output gradients',
+                              name_source=['input_gradient_file'], name_template='%s_corr.bvec', keep_extension=False)
 
     metric_type = traits.Enum(0, 1, 2, argstr='--metric %d',
                               usedefault=True,
@@ -58,63 +60,5 @@ class EddyCurrentCorrection(CommandLine):
     output_spec = EddyCurrentCorrectionOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
-        outputs['out_gradients_file'] = self.inputs.out_gradients_file
-
-        return outputs
-
-class DenseSVFBMRegistrationInputSpec(CommandLineInputSpec):
-    reference_file = File(exists=True, argstr='-r %s', mandatory=True,
-                          desc='fixed image')
-    moving_file = File(exists=True, argstr='-m %s', mandatory=True,
-                       desc='moving image')
-    out_file = File(argstr='-o %s', desc='output (registered) image',
-                    mandatory=True)
-    out_transform_file = File(argstr='-O %s',
-                              desc='output SVF transform')
-
-    input_transform_series = traits.List('', usedefault=True,
-                                         desc='Input transformations list (previous transformations applied)')
-
-    metric_type = traits.Enum(0, 1, 2, argstr='--metric %d',
-                              usedefault=True,
-                              desc='Similarity metric between blocks (0: squared correlation coefficient, \
-                                    1: correlation coefficient, 2: mean squares')
-    block_spacing = traits.Int(2, argstr='--sp %d', usedefault=True,
-                               desc='block spacing')
-    block_search_radius = traits.Int(2, argstr='--sr %d', usedefault=True,
-                                     desc='Search radius in pixels (exhaustive search window, rho start for bobyqa')
-    symmetric_registration = traits.Enum(0, 1, 2, argstr='--sym-reg %d',
-                                         usedefault=True,
-                                         desc='Registration symmetry type, 0: asymmetric, 1: symmetric, 2: kissing')
-    pyramid_levels = traits.Int(3, argstr="-p %d", usedefault=True,
-                                desc='number of pyramid levels')
-    last_pyramid_level = traits.Int(0, argstr='-l %d', usedefault=True,
-                                    desc='index of the last pyramid level explored')
-    number_of_threads = traits.Int(0, argstr='-T %d', usedefault=True,
-                                   desc='number of threads to run on')
-
-
-class DenseSVFBMRegistrationOutputSpec(TraitedSpec):
-    out_file = File(exists=True, desc='output (registered) image')
-    out_transform_file = File(exists=True, desc='output SVF transform')
-    out_transform_series = traits.List('', usedefault=True,
-                                       desc='Output transformations list (input followed by current')
-
-
-class DenseSVFBMRegistration(CommandLine):
-    _cmd = 'animaDenseSVFBMRegistration'
-    input_spec = DenseSVFBMRegistrationInputSpec
-    output_spec = DenseSVFBMRegistrationOutputSpec
-
-    def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
-
-        outputs['out_transform_series'] = self.inputs.input_transform_series
-        if self.inputs.out_transform_file:
-            outputs['out_transform_file'] = os.path.abspath(self.inputs.out_transform_file)
-            outputs['out_transform_series'].append(os.path.abspath(self.inputs.out_transform_file))
-
+        outputs = super(EddyCurrentCorrection, self)._list_outputs()
         return outputs

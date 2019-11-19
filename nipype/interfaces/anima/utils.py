@@ -38,7 +38,7 @@ class CropImageInputSpec(CommandLineInputSpec):
 
     in_file = File(exists=True, argstr='-i %s', mandatory=True,
                    desc='Input image to crop')
-    out_file = File(argstr='-o %s', mandatory=True,
+    out_file = File(argstr='-o %s', name_source=['in_file'], name_template='%s_cropped.nrrd', keep_extension=False,
                     desc='Output cropped image')
 
     tsize = traits.Int(argstr='-T %d', desc=get_desc_size('t'))
@@ -68,8 +68,7 @@ class CropImage(CommandLine):
     output_spec = CropImageOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(CropImage, self)._list_outputs()
         return outputs
 
 
@@ -77,7 +76,7 @@ class ImageArithmeticInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True,
                       desc='input image')
     out_file = File(argstr='-o %s', desc='output image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_arithmetic.nrrd', keep_extension=False)
     add_file = File(exists=True, argstr='-a %s',
                     desc='input added image')
     subtract_file = File(exists=True, argstr='-s %s',
@@ -112,8 +111,7 @@ class ImageArithmetic(CommandLine):
     output_spec = ImageArithmeticOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(ImageArithmetic, self)._list_outputs()
         return outputs
 
 
@@ -123,7 +121,7 @@ class AverageImagesInputSpec(CommandLineInputSpec):
     mask_file = File(exists=True, argstr='-m %s',
                       desc='masks file list as text file')
     out_file = File(argstr='-o %s', desc='output image',
-                    mandatory=True)
+                    name_source=['input_file'], name_template='%s_average.nrrd', keep_extension=False)
 
 
 class AverageImagesOutputSpec(TraitedSpec):
@@ -136,8 +134,7 @@ class AverageImages(CommandLine):
     output_spec = AverageImagesOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(ImageArithmetic, self)._list_outputs()
         return outputs
 
 
@@ -167,7 +164,8 @@ class MaskImage(CommandLine):
 class CreateFilesListInputSpec(BaseInterfaceInputSpec):
     input_files = InputMultiPath(File(exists=True), mandatory=True,
                                  desc='Files to be included in file list')
-    out_file = File(desc='Text file containing the file list', mandatory=True)
+    out_file = File(desc='Text file containing the file list',
+                    name_source=['input_files'], name_template='%s_list.txt', keep_extension=False)
 
 
 class CreateFilesListOutputSpec(TraitedSpec):
@@ -189,6 +187,5 @@ class CreateFilesList(BaseInterface):
         return runtime
 
     def _list_outputs(self):
-        outputs = self._outputs().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(CreateFilesList, self)._list_outputs()
         return outputs
