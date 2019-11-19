@@ -74,15 +74,15 @@ class CropImage(CommandLine):
 
 class ConvertImageInputSpec(CommandLineInputSpec):
     input_file = File(exists=True, argstr='-i %s', mandatory=True, desc='input image.')
-    out_file = File(argstr='-o %s', desc='output image', mandatory=False)
-    space_reference_image = File(argstr='-s %s', mandatory=False, desc='Image used as space reference.')
-    gradients = File(argstr='-g %s', mandatory=False, desc='input gradients.')
+    out_file = File(argstr='-o %s', desc='output image')
+    space_reference_image = File(argstr='-s %s', desc='Image used as space reference.')
+    gradients = File(argstr='-g %s', desc='input gradients.')
     reorient = traits.Str('', argstr='-R %s', usedefault=False, desc='Reorient the image in \'AXIAL\' or \'CORONAL\' or \'SAGITTAL\' direction.')
-    information = traits.Bool(True, argstr='-I', usedefault=True, desc='Get image informations')
+    information = traits.Bool(False, argstr='-I', usedefault=True, desc='Get image informations')
 
 
 class ConvertImageOutputSpec(TraitedSpec):
-    out_file = File(desc='Converted Image', exists = True)
+    out_file = File(desc='Converted Image', exists=True)
 
 
 class ConvertImage(CommandLine):
@@ -92,8 +92,7 @@ class ConvertImage(CommandLine):
     output_spec = ConvertImageOutputSpec
 
     def _list_outputs(self):
-        outputs = self.output_spec().get()
-        outputs['out_file'] = os.path.abspath(self.inputs.out_file)
+        outputs = super(ConvertImage, self)._list_outputs()
         return outputs
 
 
@@ -159,7 +158,7 @@ class AverageImages(CommandLine):
     output_spec = AverageImagesOutputSpec
 
     def _list_outputs(self):
-        outputs = super(ImageArithmetic, self)._list_outputs()
+        outputs = super(AverageImages, self)._list_outputs()
         return outputs
 
 

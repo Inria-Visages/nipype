@@ -45,6 +45,8 @@ class PyramidalBMRegistrationInputSpec(CommandLineInputSpec):
                                desc='block spacing')
     block_search_radius = traits.Int(2, argstr='--sr %d', usedefault=True,
                                      desc='Search radius in pixels (exhaustive search window, rho start for bobyqa')
+    minimal_block_std = traits.Float(15.0, argstr='-s %f', usedefault=True,
+                                     desc='Threshold on block standard deviation')
     symmetric_registration = traits.Enum(0, 1, 2, argstr='--sym-reg %d',
                                          usedefault=True,
                                          desc='Registration symmetry type, 0: asymmetric, 1: symmetric, 2: kissing')
@@ -100,6 +102,8 @@ class DenseSVFBMRegistrationInputSpec(CommandLineInputSpec):
                                desc='block spacing')
     block_search_radius = traits.Int(2, argstr='--sr %d', usedefault=True,
                                      desc='Search radius in pixels (exhaustive search window, rho start for bobyqa')
+    minimal_block_std = traits.Float(15.0, argstr='-s %f', usedefault=True,
+                                     desc='Threshold on block standard deviation')
     symmetric_registration = traits.Enum(0, 1, 2, argstr='--sym-reg %d',
                                          usedefault=True,
                                          desc='Registration symmetry type, 0: asymmetric, 1: symmetric, 2: kissing')
